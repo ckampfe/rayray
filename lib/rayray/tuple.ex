@@ -7,12 +7,24 @@ defmodule Rayray.Tuple do
     tuple(x, y, z, 0.0)
   end
 
+  def color(r, g, b) do
+    %{red: r, green: g, blue: b}
+  end
+
   def tuple(x, y, z, w) do
     %{x: x, y: y, z: z, w: w}
   end
 
+  def add(%{red: r1, green: g1, blue: b1}, %{red: r2, green: g2, blue: b2}) do
+    %{red: r1 + r2, green: g1 + g2, blue: b1 + b2}
+  end
+
   def add(t1, t2) do
     %{x: t1[:x] + t2[:x], y: t1[:y] + t2[:y], z: t1[:z] + t2[:z], w: t1[:w] + t2[:w]}
+  end
+
+  def subtract(%{red: r1, green: g1, blue: b1}, %{red: r2, green: g2, blue: b2}) do
+    %{red: r1 - r2, green: g1 - g2, blue: b1 - b2}
   end
 
   def subtract(t1, t2) do
@@ -21,6 +33,14 @@ defmodule Rayray.Tuple do
 
   def negate(%{x: x, y: y, z: z, w: w}) do
     %{x: -x, y: -y, z: -z, w: -w}
+  end
+
+  def multiply(%{red: r1, green: g1, blue: b1}, %{red: r2, green: g2, blue: b2}) do
+    %{red: r1 * r2, green: g1 * g2, blue: b1 * b2}
+  end
+
+  def multiply(%{red: r1, green: g1, blue: b1}, s) do
+    %{red: r1 * s, green: g1 * s, blue: b1 * s}
   end
 
   def multiply(%{x: x, y: y, z: z, w: w}, s) do
