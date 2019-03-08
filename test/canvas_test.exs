@@ -52,20 +52,23 @@ defmodule Rayray.CanvasTest do
 
     c =
       Enum.reduce(c, [], fn row, acc ->
-        [Enum.map(row, fn _pixel ->
-          Tuple.color(1, 0.8, 0.6)
-        end) | acc]
+        [
+          Enum.map(row, fn _pixel ->
+            Tuple.color(1, 0.8, 0.6)
+          end)
+          | acc
+        ]
       end)
 
     ppm = Canvas.canvas_to_ppm(c)
     ppm = String.split(ppm, "\n") |> Enum.drop(3) |> Enum.take(4) |> Enum.join("\n")
 
     assert ppm <> "\n" == """
-    255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
-    153 255 204 153 255 204 153 255 204 153 255 204 153
-    255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
-    153 255 204 153 255 204 153 255 204 153 255 204 153
-    """
+           255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
+           153 255 204 153 255 204 153 255 204 153 255 204 153
+           255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
+           153 255 204 153 255 204 153 255 204 153 255 204 153
+           """
   end
 
   test "ppm files are terminated by a newline character" do
