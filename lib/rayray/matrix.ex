@@ -7,6 +7,10 @@ defmodule Rayray.Matrix do
     %__MODULE__{impl: rows}
   end
 
+  def identity() do
+    %__MODULE__{impl: [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]}
+  end
+
   def get(%__MODULE__{impl: impl}, {row, col}) do
     impl
     |> Enum.at(row)
@@ -48,5 +52,29 @@ defmodule Rayray.Matrix do
       |> Enum.reverse()
 
     apply(Tuple, :tuple, new_t)
+  end
+
+  def transpose(%__MODULE__{impl: rows}) do
+    Enum.map(0..3, fn i ->
+      Enum.map(rows, fn row ->
+        Enum.at(row, i)
+      end)
+    end)
+    |> new()
+  end
+
+  def determinant(%__MODULE__{impl: rows}) do
+    [[a, b], [c, d]] = rows
+
+    a * d - b * c
+  end
+
+  def submatrix(%__MODULE__{impl: rows}, row, column) do
+    rows
+    |> List.delete_at(row)
+    |> Enum.map(fn r ->
+      List.delete_at(r, column)
+    end)
+    |> new()
   end
 end

@@ -105,4 +105,72 @@ defmodule Rayray.MatrixTest do
     t = Tuple.tuple(1, 2, 3, 1)
     assert Matrix.multiply(m, t) == Tuple.tuple(18, 24, 33, 1)
   end
+
+  test "multiplying a matrix by the identity matrix" do
+    m =
+      Matrix.new([
+        [0, 1, 2, 4],
+        [1, 2, 4, 8],
+        [2, 4, 8, 16],
+        [4, 8, 16, 32]
+      ])
+
+    assert Matrix.equal?(Matrix.multiply(m, Matrix.identity()), m)
+  end
+
+  test "multiplying the identity matrix by a tuple" do
+    t = Tuple.tuple(1, 2, 3, 4)
+    assert Matrix.multiply(Matrix.identity(), t) == t
+  end
+
+  test "transposing a matrix" do
+    m =
+      Matrix.new([
+        [0, 9, 3, 0],
+        [9, 8, 0, 8],
+        [1, 8, 5, 3],
+        [0, 0, 5, 8]
+      ])
+
+    transposed =
+      Matrix.new([
+        [0, 9, 1, 0],
+        [9, 8, 8, 0],
+        [3, 0, 5, 5],
+        [0, 8, 3, 8]
+      ])
+
+    assert Matrix.equal?(Matrix.transpose(m), transposed)
+  end
+
+  test "transposing the identity matrix" do
+    assert Matrix.equal?(Matrix.transpose(Matrix.identity()), Matrix.identity())
+  end
+
+  test "calculating the determinant of a 2x2 matrix" do
+    m = Matrix.new([[1, 5], [-3, 2]])
+    assert Matrix.determinant(m) == 17
+  end
+
+  test "a submatrix of a 3x3 matrix is a 2x2 matrix" do
+    m = Matrix.new([[1, 5, 0], [-3, 2, 7], [0, 6, -3]])
+    sub = Matrix.new([[-3, 2], [0, 6]])
+    assert Matrix.equal?(Matrix.submatrix(m, 0, 2), sub)
+  end
+
+  test "a submatrix of a 4x4 matrix is a 3x3 matrix" do
+    m =
+      Matrix.new([
+        [-6, 1, 1, 6],
+        [-8, 5, 8, 6],
+        [-1, 0, 8, 2],
+        [-7, 1, -1, 1]
+      ])
+
+    sub = Matrix.submatrix(m, 2, 1)
+
+    test_m = Matrix.new([[-6, 1, 6], [-8, 8, 6], [-7, -1, 1]])
+
+    assert Matrix.equal?(sub, test_m)
+  end
 end
