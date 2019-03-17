@@ -218,4 +218,25 @@ defmodule Rayray.MatrixTest do
     assert Matrix.determinant(m) == 0
     refute Matrix.invertible?(m)
   end
+
+  test "calculating the inverse of a matrix" do
+    m = Matrix.new([[-5, 2, 6, -8], [1, -5, 1, 8], [7, 7, -6, -7], [1, -3, 7, 4]])
+    b = Matrix.inverse(m)
+    assert Matrix.determinant(m) == 532
+    assert Matrix.cofactor(m, 2, 3) == -160
+    assert Matrix.get(b, {3, 2}) == -160 / 532
+    assert Matrix.cofactor(m, 3, 2) == 105
+    assert Matrix.get(b, {2, 3}) == 105 / 532
+
+    assert Matrix.fuzzy_equal?(
+             b,
+             Matrix.new([
+               [0.21805, 0.45113, 0.24060, -0.04511],
+               [-0.80827, -1.45677, -0.44361, 0.52068],
+               [-0.07895, -0.22368, -0.05263, 0.19737],
+               [-0.52256, -0.81391, -0.30075, 0.30639]
+             ]),
+             0.0001
+           )
+  end
 end

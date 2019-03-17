@@ -21,6 +21,37 @@ defmodule Rayray.Matrix do
     m1.impl == m2.impl
   end
 
+  def fuzzy_equal?(%__MODULE__{impl: rows1}, %__MODULE__{} = m2, epsilon) do
+    rows1
+    |> Enum.with_index()
+    |> Enum.reduce_while(true, fn
+      {row, i}, false ->
+        {:halt, false}
+
+      {row, i}, true ->
+        row_res =
+          row
+          |> Enum.with_index()
+          |> Enum.reduce_while(true, fn
+            {el, j}, false ->
+              {:halt, false}
+
+            {el, j}, true ->
+              if el - get(m2, {i, j}) < epsilon do
+                {:cont, true}
+              else
+                {:halt, false}
+              end
+          end)
+
+        if row_res do
+          {:cont, true}
+        else
+          {:halt, false}
+        end
+    end)
+  end
+
   def multiply(%__MODULE__{} = m1, %__MODULE__{} = m2) do
     empty = [[], [], [], []]
 
@@ -102,5 +133,30 @@ defmodule Rayray.Matrix do
 
   def invertible?(m) do
     determinant(m) != 0
+  end
+
+  def inverse(%__MODULE__{impl: rows} = m) do
+    cofactor_matrix =
+      rows
+      |> Enum.with_index()
+      |> Enum.map(fn {row, i} ->
+        row
+        |> Enum.with_index()
+        |> Enum.map(fn {el, j} ->
+          cofactor(m, i, j)
+        end)
+      end)
+      |> new()
+
+    transposed_cofactor_matrix = transpose(cofactor_matrix)
+
+    original_determinant = determinant(m)
+
+    Enum.map(transposed_cofactor_matrix.impl, fn row ->
+      Enum.map(row, fn el ->
+        el / original_determinant
+      end)
+    end)
+    |> new()
   end
 end
