@@ -173,4 +173,37 @@ defmodule Rayray.MatrixTest do
 
     assert Matrix.equal?(sub, test_m)
   end
+
+  test "calculating a minor of a 3x3 matrix" do
+    m = Matrix.new([[3, 5, 0], [2, -1, -7], [6, -1, 5]])
+    b = Matrix.submatrix(m, 1, 0)
+    assert Matrix.determinant(b) == 25
+    assert Matrix.minor(m, 1, 0) == 25
+  end
+
+  test "calculating a cofactor of a 3x3 matrix" do
+    m = Matrix.new([[3, 5, 0], [2, -1, -7], [6, -1, 5]])
+
+    assert Matrix.minor(m, 0, 0) == -12
+    assert Matrix.cofactor(m, 0, 0) == -12
+    assert Matrix.minor(m, 1, 0) == 25
+    assert Matrix.cofactor(m, 1, 0) == -25
+  end
+
+  test "calculating the determinant of a 3x3 matrix" do
+    m = Matrix.new([[1, 2, 6], [-5, 8, -4], [2, 6, 4]])
+    assert Matrix.cofactor(m, 0, 0) == 56
+    assert Matrix.cofactor(m, 0, 1) == 12
+    assert Matrix.cofactor(m, 0, 2) == -46
+    assert Matrix.determinant(m) == -196
+  end
+
+  test "calculating the determinant of a 4x4 matrix" do
+    m = Matrix.new([[-2, -8, 3, 5], [-3, 1, 7, 3], [1, 2, -9, 6], [-6, 7, 7, -9]])
+    assert Matrix.cofactor(m, 0, 0) == 690
+    assert Matrix.cofactor(m, 0, 1) == 447
+    assert Matrix.cofactor(m, 0, 2) == 210
+    assert Matrix.cofactor(m, 0, 3) == 51
+    assert Matrix.determinant(m) == -4071
+  end
 end

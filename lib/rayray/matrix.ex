@@ -63,10 +63,16 @@ defmodule Rayray.Matrix do
     |> new()
   end
 
-  def determinant(%__MODULE__{impl: rows}) do
-    [[a, b], [c, d]] = rows
-
+  def determinant(%__MODULE__{impl: [[a, b], [c, d]]}) do
     a * d - b * c
+  end
+
+  def determinant(%__MODULE__{impl: [row | _rest]} = m) do
+    row
+    |> Enum.with_index()
+    |> Enum.reduce(0, fn {el, i}, acc ->
+      el * cofactor(m, 0, i) + acc
+    end)
   end
 
   def submatrix(%__MODULE__{impl: rows}, row, column) do
@@ -76,5 +82,21 @@ defmodule Rayray.Matrix do
       List.delete_at(r, column)
     end)
     |> new()
+  end
+
+  def minor(%__MODULE__{} = m, row, column) do
+    m
+    |> submatrix(row, column)
+    |> determinant()
+  end
+
+  def cofactor(m, row, column) do
+    minor = minor(m, row, column)
+
+    if rem(row + column, 2) == 0 do
+      minor
+    else
+      -1 * minor
+    end
   end
 end
