@@ -99,4 +99,8 @@ defmodule Rayray.Matrix do
       -1 * minor
     end
   end
+
+  def invertible?(m) do
+    determinant(m) != 0
+  end
 end

@@ -206,4 +206,16 @@ defmodule Rayray.MatrixTest do
     assert Matrix.cofactor(m, 0, 3) == 51
     assert Matrix.determinant(m) == -4071
   end
+
+  test "testing an invertible matrix for invertibility" do
+    m = Matrix.new([[6, 4, 4, 4], [5, 5, 7, 6], [4, -9, 3, -7], [9, 1, 7, -6]])
+    assert Matrix.determinant(m) == -2120
+    assert Matrix.invertible?(m)
+  end
+
+  test "testing a noninvertible matrix for invertibility" do
+    m = Matrix.new([[-4, 2, -2, -3], [9, 6, 2, 6], [0, -5, 1, -5], [0, 0, 0, 0]])
+    assert Matrix.determinant(m) == 0
+    refute Matrix.invertible?(m)
+  end
 end
