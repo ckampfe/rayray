@@ -3,6 +3,8 @@ defmodule Rayray.MatrixTest do
   alias Rayray.Matrix
   alias Rayray.Tuple
 
+  @epsilon 0.0001
+
   test "constructing and inspecting a 4x4 matrix" do
     m =
       Matrix.new([[1, 2, 3, 4], [5.5, 6.5, 7.5, 8.5], [9, 10, 11, 12], [13.5, 14.5, 15.5, 16.5]])
@@ -236,7 +238,47 @@ defmodule Rayray.MatrixTest do
                [-0.07895, -0.22368, -0.05263, 0.19737],
                [-0.52256, -0.81391, -0.30075, 0.30639]
              ]),
-             0.0001
+             @epsilon
            )
+  end
+
+  test "calculating the inverse of another matrix" do
+    m = Matrix.new([[8, -5, 9, 2], [7, 5, 6, 1], [-6, 0, 9, 6], [-3, 0, -9, -4]])
+    b = Matrix.inverse(m)
+
+    assert Matrix.fuzzy_equal?(
+             b,
+             Matrix.new([
+               [-0.15385, -0.15385, -0.28205, -0.53846],
+               [-0.07692, 0.12308, 0.02564, 0.03077],
+               [0.35897, 0.35897, 0.43590, 0.92308],
+               [-0.69231, -0.69231, -0.76923, -1.92308]
+             ]),
+             @epsilon
+           )
+  end
+
+  test "calculating the inverse of a third matrix" do
+    m = Matrix.new([[9, 3, 0, 9], [-5, -2, -6, -3], [-4, 9, 6, 4], [-7, 6, 6, 2]])
+    b = Matrix.inverse(m)
+
+    assert Matrix.fuzzy_equal?(
+             b,
+             Matrix.new([
+               [-0.04074, -0.07778, 0.14444, -0.22222],
+               [-0.07778, 0.03333, 0.36667, -0.33333],
+               [-0.02901, -0.14630, -0.10926, 0.12963],
+               [0.17778, 0.06667, -0.26667, 0.33333]
+             ]),
+             @epsilon
+           )
+  end
+
+  test "multiplying a product by its inverse" do
+    a = Matrix.new([[3, -9, 7, 3], [3, -8, 2, -9], [-4, 4, 4, 1], [-6, 5, -1, 1]])
+    b = Matrix.new([[8, 2, 2, 2], [3, -1, 7, 0], [7, 0, 5, 4], [6, -2, 0, 5]])
+
+    c = Matrix.multiply(a, b)
+    assert Matrix.fuzzy_equal?(Matrix.multiply(c, Matrix.inverse(b)), a, @epsilon)
   end
 end
