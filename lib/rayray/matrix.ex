@@ -25,7 +25,7 @@ defmodule Rayray.Matrix do
     rows1
     |> Enum.with_index()
     |> Enum.reduce_while(true, fn
-      {row, i}, false ->
+      {_row, _i}, false ->
         {:halt, false}
 
       {row, i}, true ->
@@ -33,7 +33,7 @@ defmodule Rayray.Matrix do
           row
           |> Enum.with_index()
           |> Enum.reduce_while(true, fn
-            {el, j}, false ->
+            {_el, _j}, false ->
               {:halt, false}
 
             {el, j}, true ->
@@ -73,7 +73,7 @@ defmodule Rayray.Matrix do
     |> new()
   end
 
-  def multiply(m, t) do
+  def multiply(%__MODULE__{} = m, t) do
     new_t =
       Enum.reduce(m.impl, [], fn row, acc ->
         row_as_tuple = apply(Tuple, :tuple, row)
@@ -142,7 +142,7 @@ defmodule Rayray.Matrix do
       |> Enum.map(fn {row, i} ->
         row
         |> Enum.with_index()
-        |> Enum.map(fn {el, j} ->
+        |> Enum.map(fn {_el, j} ->
           cofactor(m, i, j)
         end)
       end)
@@ -158,5 +158,69 @@ defmodule Rayray.Matrix do
       end)
     end)
     |> new()
+  end
+
+  def translation(x, y, z) do
+    identity().impl
+    |> List.update_at(0, fn old ->
+      List.update_at(old, 3, fn _ -> x end)
+    end)
+    |> List.update_at(1, fn old ->
+      List.update_at(old, 3, fn _ -> y end)
+    end)
+    |> List.update_at(2, fn old ->
+      List.update_at(old, 3, fn _ -> z end)
+    end)
+    |> new()
+  end
+
+  def scaling(x, y, z) do
+    identity().impl
+    |> List.update_at(0, fn old ->
+      List.update_at(old, 0, fn _ -> x end)
+    end)
+    |> List.update_at(1, fn old ->
+      List.update_at(old, 1, fn _ -> y end)
+    end)
+    |> List.update_at(2, fn old ->
+      List.update_at(old, 2, fn _ -> z end)
+    end)
+    |> new()
+  end
+
+  def rotation_x(r) do
+    new([
+      [1, 0, 0, 0],
+      [0, :math.cos(r), -1 * :math.sin(r), 0],
+      [0, :math.sin(r), :math.cos(r), 0],
+      [0, 0, 0, 1]
+    ])
+  end
+
+  def rotation_y(r) do
+    new([
+      [:math.cos(r), 0, :math.sin(r), 0],
+      [0, 1, 0, 0],
+      [-1 * :math.sin(r), 0, :math.cos(r), 0],
+      [0, 0, 0, 1]
+    ])
+  end
+
+  def rotation_z(r) do
+    new([
+      [:math.cos(r), -1 * :math.sin(r), 0, 0],
+      [:math.sin(r), :math.cos(r), 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1]
+    ])
+  end
+
+  def shearing(xy, xz, yx, yz, zx, zy) do
+    new([
+      [1, xy, xz, 0],
+      [yx, 1, yz, 0],
+      [zx, zy, 1, 0],
+      [0, 0, 0, 1]
+    ])
   end
 end

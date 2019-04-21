@@ -4,6 +4,7 @@ defmodule Rayray.MatrixTest do
   alias Rayray.Tuple
 
   @epsilon 0.0001
+  @pi_over_2 :math.pi() / 2
 
   test "constructing and inspecting a 4x4 matrix" do
     m =
@@ -280,5 +281,181 @@ defmodule Rayray.MatrixTest do
 
     c = Matrix.multiply(a, b)
     assert Matrix.fuzzy_equal?(Matrix.multiply(c, Matrix.inverse(b)), a, @epsilon)
+  end
+
+  test "multiplying by a translation matrix" do
+    transform = Matrix.translation(5, -3, 2)
+    p = Tuple.point(-3, 4, 5)
+
+    assert Matrix.multiply(transform, p) == Tuple.point(2, 1, 7)
+  end
+
+  test "multiplying by the inverse of a translation matrix" do
+    transform = Matrix.translation(5, -3, 2)
+    inverse = Matrix.inverse(transform)
+    p = Tuple.point(-3, 4, 5)
+
+    assert Matrix.multiply(inverse, p) == Tuple.point(-8, 7, 3)
+  end
+
+  test "translation does not affect vectors" do
+    transform = Matrix.translation(5, -3, 2)
+    v = Tuple.vector(-3, 4, 5)
+
+    assert Matrix.multiply(transform, v) == v
+  end
+
+  test "A scaling matrix applied to a point" do
+    transform = Matrix.scaling(2, 3, 4)
+    p = Tuple.point(-4, 6, 8)
+    assert Matrix.multiply(transform, p) == Tuple.point(-8, 18, 32)
+  end
+
+  test "A scaling matrix applied to a vector" do
+    transform = Matrix.scaling(2, 3, 4)
+    v = Tuple.vector(-4, 6, 8)
+    assert Matrix.multiply(transform, v) == Tuple.vector(-8, 18, 32)
+  end
+
+  test "Multiplying by the inverse of a scaling matrix" do
+    transform = Matrix.scaling(2, 3, 4)
+    inv = Matrix.inverse(transform)
+    v = Tuple.vector(-4, 6, 8)
+    assert Matrix.multiply(inv, v) == Tuple.vector(-2, 2, 2)
+  end
+
+  test "Reflection is scaling by a negative value" do
+    transform = Matrix.scaling(-1, 1, 1)
+    p = Tuple.point(2, 3, 4)
+    assert Matrix.multiply(transform, p) == Tuple.point(-2, 3, 4)
+  end
+
+  test "Rotating a point around the x axis" do
+    p = Tuple.point(0.0, 1.0, 0.0)
+    half_quarter = Matrix.rotation_x(:math.pi() / 4)
+    full_quarter = Matrix.rotation_x(:math.pi() / 2)
+
+    hqm = Matrix.multiply(half_quarter, p)
+    t1 = Tuple.point(0.0, :math.sqrt(2) / 2, :math.sqrt(2) / 2)
+    assert hqm.w - t1.w < @epsilon
+    assert hqm.x - t1.x < @epsilon
+    assert hqm.y - t1.y < @epsilon
+    assert hqm.z - t1.z < @epsilon
+
+    fqm = Matrix.multiply(full_quarter, p)
+    t2 = Tuple.point(0.0, 0.0, 1.0)
+
+    assert fqm.w - t2.w < @epsilon
+    assert fqm.x - t2.x < @epsilon
+    assert fqm.y - t2.y < @epsilon
+    assert fqm.z - t2.z < @epsilon
+  end
+
+  test "The inverse of an x-rotation rotates in the opposite direction" do
+    p = Tuple.point(0.0, 1.0, 0.0)
+    half_quarter = Matrix.rotation_x(:math.pi() / 4)
+    inv = Matrix.inverse(half_quarter)
+    m = Matrix.multiply(inv, p)
+    t = Tuple.point(0.0, :math.sqrt(2) / 2, -1 * :math.sqrt(2) / 2)
+
+    assert m.w - t.w < @epsilon
+    assert m.x - t.x < @epsilon
+    assert m.y - t.y < @epsilon
+    assert m.z - t.z < @epsilon
+  end
+
+  test "Rotating a point aorund the y axis" do
+    p = Tuple.point(0, 0, 1)
+    half_quarter = Matrix.rotation_y(:math.pi() / 4)
+    full_quarter = Matrix.rotation_y(:math.pi() / 2)
+
+    hqm = Matrix.multiply(half_quarter, p)
+    p1 = Tuple.point(:math.sqrt(2) / 2, 0, :math.sqrt(2) / 2)
+    assert hqm.w - p1.w < @epsilon
+    assert hqm.x - p1.x < @epsilon
+    assert hqm.y - p1.y < @epsilon
+    assert hqm.z - p1.z < @epsilon
+
+    fqm = Matrix.multiply(full_quarter, p)
+    p2 = Tuple.point(1, 0, 0)
+    assert fqm.w - p2.w < @epsilon
+    assert fqm.x - p2.x < @epsilon
+    assert fqm.y - p2.y < @epsilon
+    assert fqm.z - p2.z < @epsilon
+  end
+
+  test "Rotating a point around the z axis" do
+    p = Tuple.point(0, 1, 0)
+    half_quarter = Matrix.rotation_z(:math.pi() / 4)
+    full_quarter = Matrix.rotation_z(:math.pi() / 2)
+
+    hqm = Matrix.multiply(half_quarter, p)
+    p1 = Tuple.point(-1 * :math.sqrt(2) / 2, :math.sqrt(2) / 2, 0)
+    assert hqm.w - p1.w < @epsilon
+    assert hqm.x - p1.x < @epsilon
+    assert hqm.y - p1.y < @epsilon
+    assert hqm.z - p1.z < @epsilon
+
+    fqm = Matrix.multiply(full_quarter, p)
+    p2 = Tuple.point(-1, 0, 0)
+    assert fqm.w - p2.w < @epsilon
+    assert fqm.x - p2.x < @epsilon
+    assert fqm.y - p2.y < @epsilon
+    assert fqm.z - p2.z < @epsilon
+  end
+
+  test "A shearing transformation moves x in proportion to y" do
+    transform = Matrix.shearing(1, 0, 0, 0, 0, 0)
+    p = Tuple.point(2, 3, 4)
+    assert Matrix.multiply(transform, p) == Tuple.point(5, 3, 4)
+  end
+
+  test "A shearing transformation moves x in proportion to z" do
+    transform = Matrix.shearing(0, 1, 0, 0, 0, 0)
+    p = Tuple.point(2, 3, 4)
+    assert Matrix.multiply(transform, p) == Tuple.point(6, 3, 4)
+  end
+
+  test "A shearing transformation moves y in proportion to x" do
+    transform = Matrix.shearing(0, 0, 1, 0, 0, 0)
+    p = Tuple.point(2, 3, 4)
+    assert Matrix.multiply(transform, p) == Tuple.point(2, 5, 4)
+  end
+
+  test "A shearing transformation moves y in proportion to z" do
+    transform = Matrix.shearing(0, 0, 0, 1, 0, 0)
+    p = Tuple.point(2, 3, 4)
+    assert Matrix.multiply(transform, p) == Tuple.point(2, 7, 4)
+  end
+
+  test "A shearing transformation moves z in proportion to x" do
+    transform = Matrix.shearing(0, 0, 0, 0, 1, 0)
+    p = Tuple.point(2, 3, 4)
+    assert Matrix.multiply(transform, p) == Tuple.point(2, 3, 6)
+  end
+
+  test "A shearing transformation moves z in proportion to y" do
+    transform = Matrix.shearing(0, 0, 0, 0, 0, 1)
+    p = Tuple.point(2, 3, 4)
+    assert Matrix.multiply(transform, p) == Tuple.point(2, 3, 7)
+  end
+
+  test "Individual transformations are applied in a sequence" do
+    p = Tuple.point(1, 0, 1)
+    a = Matrix.rotation_x(@pi_over_2)
+    b = Matrix.scaling(5, 5, 5)
+    c = Matrix.translation(10, 5, 7)
+
+    # rotation first
+    p2 = Matrix.multiply(a, p)
+    assert Tuple.fuzzy_equal?(p2, Tuple.point(1, -1, 0), @epsilon)
+
+    # scaling
+    p3 = Matrix.multiply(b, p2)
+    assert Tuple.fuzzy_equal?(p3, Tuple.point(5, -5, 0), @epsilon)
+
+    # translation
+    p4 = Matrix.multiply(c, p3)
+    assert Tuple.fuzzy_equal?(p4, Tuple.point(15, 0, 7), @epsilon)
   end
 end

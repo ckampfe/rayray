@@ -75,4 +75,20 @@ defmodule Rayray.Tuple do
       a[:x] * b[:y] - a[:y] * b[:x]
     )
   end
+
+  def fuzzy_equal?(p1, p2, epsilon) do
+    p1
+    |> Map.keys()
+    |> Enum.reduce_while(true, fn
+      val, false ->
+        {:halt, false}
+
+      el, true ->
+        if Map.fetch!(p1, el) - Map.fetch!(p2, el) < epsilon do
+          {:cont, true}
+        else
+          {:halt, false}
+        end
+    end)
+  end
 end
