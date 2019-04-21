@@ -80,7 +80,7 @@ defmodule Rayray.Tuple do
     p1
     |> Map.keys()
     |> Enum.reduce_while(true, fn
-      val, false ->
+      _val, false ->
         {:halt, false}
 
       el, true ->
