@@ -1,14 +1,16 @@
 defmodule Rayray.Sphere do
+  alias Rayray.Matrix
   alias Rayray.Tuple
 
-  defstruct origin: nil, radius: 1
+  defstruct origin: Tuple.point(0, 0, 0), radius: 1, transform: Matrix.identity()
 
   def new() do
-    %__MODULE__{origin: Tuple.point(0, 0, 0)}
+    %__MODULE__{}
   end
 end
 
 defimpl Rayray.Intersect, for: Rayray.Sphere do
+  alias Rayray.Intersection
   alias Rayray.Tuple
 
   def intersect(sphere, ray) do
@@ -24,7 +26,7 @@ defimpl Rayray.Intersect, for: Rayray.Sphere do
     else
       t1 = (-b - :math.sqrt(disciminant)) / (2 * a)
       t2 = (-b + :math.sqrt(disciminant)) / (2 * a)
-      [t1, t2]
+      Enum.map([t1, t2], fn t -> Intersection.new(t, sphere) end)
     end
   end
 end
