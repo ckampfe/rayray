@@ -1,11 +1,35 @@
 defmodule Rayray.Sphere do
+  alias Rayray.Material
   alias Rayray.Matrix
   alias Rayray.Tuple
 
-  defstruct origin: Tuple.point(0, 0, 0), radius: 1, transform: Matrix.identity()
+  defstruct origin: Tuple.point(0, 0, 0),
+            radius: 1,
+            transform: Matrix.identity(),
+            material: Material.new()
 
   def new() do
     %__MODULE__{}
+  end
+end
+
+defimpl Rayray.Normal, for: Rayray.Sphere do
+  alias Rayray.Matrix
+  alias Rayray.Tuple
+
+  def normal_at(sphere, world_point) do
+    object_point = Matrix.multiply(Matrix.inverse(sphere.transform), world_point)
+    object_normal = Tuple.subtract(object_point, Tuple.point(0, 0, 0))
+
+    world_normal =
+      sphere.transform
+      |> Matrix.inverse()
+      |> Matrix.transpose()
+      |> Matrix.multiply(object_normal)
+
+    world_normal = %{world_normal | w: 0}
+
+    Tuple.normalize(world_normal)
   end
 end
 

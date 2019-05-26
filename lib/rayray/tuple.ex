@@ -91,4 +91,11 @@ defmodule Rayray.Tuple do
         end
     end)
   end
+
+  def reflect(in_vec, normal_vec) do
+    subtract(
+      in_vec,
+      multiply(multiply(normal_vec, 2), dot(in_vec, normal_vec))
+    )
+  end
 end

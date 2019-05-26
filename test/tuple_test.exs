@@ -170,4 +170,19 @@ defmodule Rayray.TupleTest do
     assert test[:green] - res[:green] < 0.0000001
     assert test[:blue] - res[:blue] < 0.0000001
   end
+
+  test "Reflecting a vector approaching at 45 degrees" do
+    v = Tuple.vector(1, -1, 0)
+    n = Tuple.vector(0, 1, 0)
+    r = Tuple.reflect(v, n)
+    assert r == Tuple.vector(1, 1, 0)
+  end
+
+  test "Reflecting a vector off a slanted surface" do
+    v = Tuple.vector(0, -1, 0)
+    n = Tuple.vector(:math.sqrt(2) / 2, :math.sqrt(2) / 2, 0)
+    r = Tuple.reflect(v, n)
+    # assert r == Tuple.vector(1, 0, 0)
+    assert Tuple.fuzzy_equal?(r, Tuple.vector(1, 0, 0), 0.0001)
+  end
 end
