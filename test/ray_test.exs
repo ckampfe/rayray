@@ -155,4 +155,21 @@ defmodule Rayray.RayTest do
     s = %{s | transform: t}
     assert s.transform == t
   end
+
+  test "Intersecting a scaled sphere with a ray" do
+    r = Ray.new(Tuple.point(0, 0, -5), Tuple.vector(0, 0, 1))
+    s = Sphere.new()
+    s = %{s | transform: Matrix.scaling(2, 2, 2)}
+    xs = Intersect.intersect(s, r)
+    # assert Enum.count(xs) == 2
+    assert [%{t: 3.0}, %{t: 7.0}] = xs
+  end
+
+  test "Intersecting a translated sphere with a ray" do
+    r = Ray.new(Tuple.point(0, 0, -5), Tuple.vector(0, 0, 1))
+    s = Sphere.new()
+    s = %{s | transform: Matrix.translation(5, 0, 0)}
+    xs = Intersect.intersect(s, r)
+    assert Enum.count(xs) == 0
+  end
 end

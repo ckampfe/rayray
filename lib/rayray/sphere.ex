@@ -12,8 +12,11 @@ end
 defimpl Rayray.Intersect, for: Rayray.Sphere do
   alias Rayray.Intersection
   alias Rayray.Tuple
+  alias Rayray.Matrix
+  alias Rayray.Ray
 
   def intersect(sphere, ray) do
+    ray = Ray.transform(ray, Matrix.inverse(sphere.transform))
     sphere_to_ray = Tuple.subtract(ray.origin, sphere.origin)
     a = Tuple.dot(ray.direction, ray.direction)
     b = 2 * Tuple.dot(ray.direction, sphere_to_ray)
