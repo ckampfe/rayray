@@ -38,7 +38,12 @@ defmodule Rayray.CanvasTest do
     c = Canvas.write_pixel(c, 4, 2, c3)
     ppm = Canvas.canvas_to_ppm(c)
 
-    data_lines = ppm |> String.split("\n") |> Enum.drop(3) |> Enum.take(3) |> Enum.join("\n")
+    data_lines =
+      ppm
+      |> String.split("\n")
+      |> Enum.drop(3)
+      |> Enum.take(3)
+      |> Enum.join("\n")
 
     assert data_lines <> "\n" == """
            255 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -51,13 +56,14 @@ defmodule Rayray.CanvasTest do
     c = Canvas.canvas(10, 2)
 
     c =
-      Enum.reduce(c, [], fn row, acc ->
-        [
-          Enum.map(row, fn _pixel ->
-            Tuple.color(1, 0.8, 0.6)
+      Enum.reduce(c, %{}, fn {x, row}, acc ->
+        Map.put(
+          acc,
+          x,
+          Enum.reduce(row, acc, fn {y, _col}, acc2 ->
+            Map.put(acc2, y, Tuple.color(1, 0.8, 0.6))
           end)
-          | acc
-        ]
+        )
       end)
 
     ppm = Canvas.canvas_to_ppm(c)

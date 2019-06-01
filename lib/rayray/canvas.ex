@@ -4,31 +4,35 @@ defmodule Rayray.Canvas do
   def canvas(w, h) do
     black = Tuple.color(0, 0, 0)
 
-    Enum.map(0..(h - 1), fn _i ->
-      Enum.map(0..(w - 1), fn _j ->
-        black
-      end)
+    Enum.reduce(0..(w - 1), %{}, fn x, acc ->
+      Map.put(
+        acc,
+        x,
+        Enum.reduce(0..(h - 1), acc, fn y, acc2 ->
+          Map.put(acc2, y, black)
+        end)
+      )
     end)
   end
 
   def width(c) do
-    Enum.count(List.first(c))
-  end
-
-  def height(c) do
     Enum.count(c)
   end
 
+  def height(c) do
+    c
+    |> Enum.take(1)
+    |> List.first()
+    |> (fn {_k, v} -> Enum.count(v) end).()
+  end
+
   def write_pixel(canvas, x, y, pixel) do
-    List.update_at(canvas, y, fn column ->
-      List.update_at(column, x, fn _row -> pixel end)
-    end)
+    Kernel.put_in(canvas, [x, y], pixel)
   end
 
   def pixel_at(canvas, x, y) do
-    canvas
-    |> Enum.at(y)
-    |> Enum.at(x)
+    %{^x => %{^y => color}} = canvas
+    color
   end
 
   def canvas_to_ppm(canvas) do
@@ -58,20 +62,27 @@ defmodule Rayray.Canvas do
         {:cont, acc <> "\n", ""}
     end
 
+    x_indexes = 0..(width - 1)
+    y_indexes = 0..(height - 1)
+
     pixels =
-      canvas
-      |> Enum.map(fn row ->
+      y_indexes
+      |> Flow.from_enumerable()
+      |> Flow.map(fn y ->
         pixel_row =
-          Enum.flat_map(row, fn color ->
-            r = color[:red] |> clamp() |> scale()
-            g = color[:green] |> clamp() |> scale()
-            b = color[:blue] |> clamp() |> scale()
+          Enum.flat_map(x_indexes, fn x ->
+            %{^x => %{^y => %{red: red, green: green, blue: blue}}} = canvas
+
+            r = red |> clamp() |> scale()
+            g = green |> clamp() |> scale()
+            b = blue |> clamp() |> scale()
 
             ["#{r}", "#{g}", "#{b}"]
           end)
 
         Enum.chunk_while(pixel_row, "", chunk_fun, after_fun)
       end)
+      |> Enum.to_list()
 
     """
     P3
