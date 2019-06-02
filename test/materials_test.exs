@@ -1,5 +1,5 @@
 defmodule Rayray.MaterialsTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Rayray.Lights
   alias Rayray.Material
   alias Rayray.Tuple

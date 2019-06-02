@@ -1,5 +1,5 @@
 defmodule Rayray.SphereTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Rayray.Material
   alias Rayray.Matrix
   alias Rayray.Normal

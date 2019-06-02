@@ -1,5 +1,5 @@
 defmodule Rayray.TupleTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Rayray.Tuple
 
   test "tuple with w=1.0 is a point" do

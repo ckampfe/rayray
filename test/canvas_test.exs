@@ -1,5 +1,5 @@
 defmodule Rayray.CanvasTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Rayray.Canvas
   alias Rayray.Tuple
 
