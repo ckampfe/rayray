@@ -52,12 +52,22 @@ defmodule Rayray.Camera do
   def render(camera, world) do
     image = Canvas.canvas(camera.hsize, camera.vsize)
 
-    Enum.reduce(0..(camera.vsize - 1), image, fn x, acc ->
-      Enum.reduce(0..(camera.hsize - 1), acc, fn y, acc2 ->
-        ray = ray_for_pixel(camera, x, y)
-        color = World.color_at(world, ray)
-        Canvas.write_pixel(acc2, x, y, color)
-      end)
+    coords =
+      for y <- 0..(camera.vsize - 1), x <- 0..(camera.hsize - 1) do
+        {x, y}
+      end
+
+    coords
+    |> Flow.from_enumerable()
+    |> Flow.map(fn {x, y} ->
+      ray = ray_for_pixel(camera, x, y)
+      {x, y, World.color_at(world, ray)}
     end)
+    |> Enum.reduce(
+      image,
+      fn {x, y, color}, c ->
+        Canvas.write_pixel(c, x, y, color)
+      end
+    )
   end
 end

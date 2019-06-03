@@ -67,8 +67,8 @@ defmodule Rayray.Canvas do
 
     pixels =
       y_indexes
-      |> Flow.from_enumerable()
-      |> Flow.map(fn y ->
+      # |> Flow.from_enumerable()
+      |> Enum.map(fn y ->
         pixel_row =
           Enum.flat_map(x_indexes, fn x ->
             %{^x => %{^y => %{red: red, green: green, blue: blue}}} = canvas
