@@ -1,4 +1,4 @@
-defmodule Rayray.Scene do
+defmodule Rayray.Renderings.Scene do
   alias Rayray.Camera
   alias Rayray.Canvas
   alias Rayray.Lights

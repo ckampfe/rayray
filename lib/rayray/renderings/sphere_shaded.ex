@@ -1,4 +1,4 @@
-defmodule Rayray.RenderSphereShaded do
+defmodule Rayray.Renderings.SphereShaded do
   alias Rayray.Canvas
   alias Rayray.Intersect
   alias Rayray.Intersection
@@ -28,7 +28,7 @@ defmodule Rayray.RenderSphereShaded do
     light_color = Tuple.color(1, 1, 1)
     light = Lights.point_light(light_position, light_color)
 
-    black = Tuple.color(0, 0, 0)
+    # black = Tuple.color(0, 0, 0)
 
     coords =
       for y <- 0..(canvas_pixels - 1), x <- 0..(canvas_pixels - 1) do

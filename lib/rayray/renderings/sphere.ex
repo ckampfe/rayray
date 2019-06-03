@@ -1,4 +1,4 @@
-defmodule Rayray.RenderSphere do
+defmodule Rayray.Renderings.Sphere do
   alias Rayray.Canvas
   alias Rayray.Intersect
   alias Rayray.Intersection

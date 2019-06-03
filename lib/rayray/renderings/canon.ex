@@ -1,4 +1,4 @@
-defmodule Rayray.Canon do
+defmodule Rayray.Renderings.Canon do
   alias Rayray.Tuple
 
   def tick(env, projectile) do

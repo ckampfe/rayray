@@ -1,4 +1,4 @@
-defmodule Rayray.Clock do
+defmodule Rayray.Renderings.Clock do
   alias Rayray.Canvas
   alias Rayray.Tuple
   alias Rayray.Matrix
