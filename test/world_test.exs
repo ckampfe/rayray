@@ -125,4 +125,49 @@ defmodule Rayray.WorldTest do
     %{objects: [_, %{material: %{color: inner_material_color}}]} = w
     assert c == inner_material_color
   end
+
+  test "There is no shadow when nothing is collinear with point and light" do
+    w = World.default()
+    p = Tuple.point(0, 10, 0)
+    refute World.is_shadowed(w, p)
+  end
+
+  test "The shadow when an object is between the point and the light" do
+    w = World.default()
+    p = Tuple.point(10, -10, 10)
+    assert World.is_shadowed(w, p)
+  end
+
+  test "There is no shadow when an object is behind the light" do
+    w = World.default()
+    p = Tuple.point(-20, 20, -20)
+    refute World.is_shadowed(w, p)
+  end
+
+  test "There is no shadow when an objejct is behind the point" do
+    w = World.default()
+    p = Tuple.point(-2, 2, -2)
+    refute World.is_shadowed(w, p)
+  end
+
+  test "shade_hit/2 is given an intersection in a shadow" do
+    s1 = Sphere.new()
+    s2 = Sphere.new()
+    s2 = %{s2 | transform: Matrix.translation(0, 0, 10)}
+
+    w = World.new()
+
+    w = %{
+      w
+      | light: Lights.point_light(Tuple.point(0, 0, -10), Tuple.color(1, 1, 1)),
+        objects: [s1, s2]
+    }
+
+    r = Ray.new(Tuple.point(0, 0, 5), Tuple.vector(0, 0, 1))
+
+    i = Intersection.new(4, s2)
+    comps = Intersection.prepare_computations(i, r)
+    c = World.shade_hit(w, comps)
+    assert c == Tuple.color(0.1, 0.1, 0.1)
+  end
 end

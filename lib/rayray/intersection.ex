@@ -32,13 +32,16 @@ defmodule Rayray.Intersection do
         {false, normalv}
       end
 
+    over_point = Tuple.add(point, Tuple.multiply(normalv, 0.00001))
+
     %{
       t: t,
       object: object,
       point: point,
       eyev: eyev,
       normalv: normalv,
-      inside: inside?
+      inside: inside?,
+      over_point: over_point
     }
   end
 end

@@ -4,6 +4,7 @@ defmodule Rayray.World do
   alias Rayray.Lights
   alias Rayray.Material
   alias Rayray.Matrix
+  alias Rayray.Ray
   alias Rayray.Sphere
   alias Rayray.Tuple
 
@@ -46,9 +47,10 @@ defmodule Rayray.World do
     Lights.lighting(
       comps.object.material,
       world.light,
-      comps.point,
+      comps.over_point,
       comps.eyev,
-      comps.normalv
+      comps.normalv,
+      is_shadowed(world, comps.over_point)
     )
   end
 
@@ -62,5 +64,16 @@ defmodule Rayray.World do
       comps = Intersection.prepare_computations(intersection, ray)
       shade_hit(world, comps)
     end
+  end
+
+  def is_shadowed(world, point) do
+    v = Tuple.subtract(world.light.position, point)
+    distance = Tuple.magnitude(v)
+    direction = Tuple.normalize(v)
+    ray = Ray.new(point, direction)
+    intersections = intersect_world(world, ray)
+    hit = Intersection.hit(intersections)
+
+    hit && hit.t < distance
   end
 end

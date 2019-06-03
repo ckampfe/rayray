@@ -7,7 +7,7 @@ defmodule Rayray.Lights do
     %__MODULE__{position: position, intensity: intensity}
   end
 
-  def lighting(material, light, point, eyev, normalv) do
+  def lighting(material, light, point, eyev, normalv, in_shadow) do
     effective_color = Tuple.multiply(material.color, light.intensity)
     lightv = Tuple.normalize(Tuple.subtract(light.position, point))
     ambient = Tuple.multiply(effective_color, material.ambient)
@@ -38,9 +38,12 @@ defmodule Rayray.Lights do
         end
       end
 
-    # ambient + diffuse + specular
-    ambient
-    |> Tuple.add(diffuse)
-    |> Tuple.add(specular)
+    if in_shadow do
+      ambient
+    else
+      ambient
+      |> Tuple.add(diffuse)
+      |> Tuple.add(specular)
+    end
   end
 end

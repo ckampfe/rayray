@@ -119,6 +119,6 @@ defmodule Rayray.Renderings.Scene do
 
     IO.puts("Done ppm")
 
-    File.write!("scene.ppm", ppm)
+    File.write!("scene_shadowed_big.ppm", ppm)
   end
 end

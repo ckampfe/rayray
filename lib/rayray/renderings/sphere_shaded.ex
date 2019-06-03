@@ -50,7 +50,7 @@ defmodule Rayray.Renderings.SphereShaded do
           point = Ray.position(ray, hit.t)
           normal = Normal.normal_at(hit.object, point)
           eye = Tuple.multiply(ray.direction, -1)
-          {x, y, Lights.lighting(hit.object.material, light, point, eye, normal)}
+          {x, y, Lights.lighting(hit.object.material, light, point, eye, normal, false)}
         else
           {x, y, :black}
         end

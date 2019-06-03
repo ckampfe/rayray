@@ -19,7 +19,7 @@ defmodule Rayray.MaterialsTest do
     eyev = Tuple.vector(0, 0, -1)
     normalv = Tuple.vector(0, 0, -1)
     light = Lights.point_light(Tuple.point(0, 0, -10), Tuple.color(1, 1, 1))
-    result = Lights.lighting(m, light, position, eyev, normalv)
+    result = Lights.lighting(m, light, position, eyev, normalv, false)
     assert result == Tuple.color(1.9, 1.9, 1.9)
   end
 
@@ -29,7 +29,7 @@ defmodule Rayray.MaterialsTest do
     eyev = Tuple.vector(0, :math.sqrt(2) / 2, -1 * :math.sqrt(2) / 2)
     normalv = Tuple.vector(0, 0, -1)
     light = Lights.point_light(Tuple.point(0, 0, -10), Tuple.color(1, 1, 1))
-    result = Lights.lighting(m, light, position, eyev, normalv)
+    result = Lights.lighting(m, light, position, eyev, normalv, false)
     assert result == Tuple.color(1.0, 1.0, 1.0)
   end
 
@@ -39,7 +39,7 @@ defmodule Rayray.MaterialsTest do
     eyev = Tuple.vector(0, 0, -1)
     normalv = Tuple.vector(0, 0, -1)
     light = Lights.point_light(Tuple.point(0, 10, -10), Tuple.color(1, 1, 1))
-    result = Lights.lighting(m, light, position, eyev, normalv)
+    result = Lights.lighting(m, light, position, eyev, normalv, false)
     assert Tuple.fuzzy_equal?(result, Tuple.color(0.7364, 0.7364, 0.7364), 0.0001)
   end
 
@@ -49,7 +49,7 @@ defmodule Rayray.MaterialsTest do
     eyev = Tuple.vector(0, -1 * :math.sqrt(2) / 2, -1 * :math.sqrt(2) / 2)
     normalv = Tuple.vector(0, 0, -1)
     light = Lights.point_light(Tuple.point(0, 10, -10), Tuple.color(1, 1, 1))
-    result = Lights.lighting(m, light, position, eyev, normalv)
+    result = Lights.lighting(m, light, position, eyev, normalv, false)
     assert Tuple.fuzzy_equal?(result, Tuple.color(1.6364, 1.6364, 1.6364), 0.0001)
   end
 
@@ -59,7 +59,18 @@ defmodule Rayray.MaterialsTest do
     eyev = Tuple.vector(0, 0, -1)
     normalv = Tuple.vector(0, 0, -1)
     light = Lights.point_light(Tuple.point(0, 0, 10), Tuple.color(1, 1, 1))
-    result = Lights.lighting(m, light, position, eyev, normalv)
+    result = Lights.lighting(m, light, position, eyev, normalv, false)
+    assert result == Tuple.color(0.1, 0.1, 0.1)
+  end
+
+  test "Lighting with the surface in shadow" do
+    m = Material.new()
+    position = Tuple.point(0, 0, 0)
+    eyev = Tuple.vector(0, 0, -1)
+    normalv = Tuple.vector(0, 0, -1)
+    light = Lights.point_light(Tuple.point(0, 0, -10), Tuple.color(1, 1, 1))
+    in_shadow = true
+    result = Lights.lighting(m, light, position, eyev, normalv, in_shadow)
     assert result == Tuple.color(0.1, 0.1, 0.1)
   end
 end

@@ -172,4 +172,14 @@ defmodule Rayray.RayTest do
     xs = Intersect.intersect(s, r)
     assert Enum.count(xs) == 0
   end
+
+  test "The hit should offset the point" do
+    r = Ray.new(Tuple.point(0, 0, -5), Tuple.vector(0, 0, 1))
+    shape = Sphere.new()
+    shape = %{shape | transform: Matrix.translation(0, 0, 1)}
+    i = Intersection.new(5, shape)
+    comps = Intersection.prepare_computations(i, r)
+    assert comps.over_point.z < -0.00001 / 2
+    assert comps.point.z > comps.over_point.z
+  end
 end
