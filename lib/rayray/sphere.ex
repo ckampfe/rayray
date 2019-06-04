@@ -13,34 +13,19 @@ defmodule Rayray.Sphere do
   end
 end
 
-defimpl Rayray.Normal, for: Rayray.Sphere do
-  alias Rayray.Matrix
+defimpl Rayray.LocalNormal, for: Rayray.Sphere do
   alias Rayray.Tuple
 
-  def normal_at(sphere, world_point) do
-    object_point = Matrix.multiply(Matrix.inverse(sphere.transform), world_point)
-    object_normal = Tuple.subtract(object_point, Tuple.point(0, 0, 0))
-
-    world_normal =
-      sphere.transform
-      |> Matrix.inverse()
-      |> Matrix.transpose()
-      |> Matrix.multiply(object_normal)
-
-    world_normal = %{world_normal | w: 0}
-
-    Tuple.normalize(world_normal)
+  def local_normal_at(_sphere, local_point) do
+    local_point
   end
 end
 
-defimpl Rayray.Intersect, for: Rayray.Sphere do
+defimpl Rayray.LocalIntersect, for: Rayray.Sphere do
   alias Rayray.Intersection
   alias Rayray.Tuple
-  alias Rayray.Matrix
-  alias Rayray.Ray
 
-  def intersect(sphere, ray) do
-    ray = Ray.transform(ray, Matrix.inverse(sphere.transform))
+  def local_intersect(sphere, ray) do
     sphere_to_ray = Tuple.subtract(ray.origin, sphere.origin)
     a = Tuple.dot(ray.direction, ray.direction)
     b = 2 * Tuple.dot(ray.direction, sphere_to_ray)
